@@ -20,7 +20,7 @@ package com.alibaba.dubbo.common.extensionloader.activate.impl;
 import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.common.extensionloader.activate.ActivateExt1;
 
-@Activate(group = {"default_group"})
+@Activate(group = {"group3"})
 public class ActivateExt1Impl1 implements ActivateExt1 {
     public String echo(String msg) {
         return msg;

@@ -32,6 +32,11 @@ public interface SimpleExt {
     @Adaptive({"key1", "key2"})
     String yell(URL url, String s);
 
+
     // no @Adaptive
     String bang(URL url, int i);
+
+
+    // no @Adaptive  and no Url
+    String doSomething(URL url, int i);
 }

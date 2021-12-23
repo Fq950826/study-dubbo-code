@@ -32,4 +32,10 @@ public class SimpleExtImpl2 implements SimpleExt {
         return "bang2";
     }
 
+    @Override
+    public String doSomething(URL url, int i) {
+        return null;
+    }
+
+
 }

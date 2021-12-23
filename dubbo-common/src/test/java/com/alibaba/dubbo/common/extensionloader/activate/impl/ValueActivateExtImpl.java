@@ -20,7 +20,7 @@ package com.alibaba.dubbo.common.extensionloader.activate.impl;
 import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.common.extensionloader.activate.ActivateExt1;
 
-@Activate(value = {"value"}, group = {"value"})
+@Activate(value = {"validation"},group = {"group3"})
 public class ValueActivateExtImpl implements ActivateExt1 {
 
     public String echo(String msg) {

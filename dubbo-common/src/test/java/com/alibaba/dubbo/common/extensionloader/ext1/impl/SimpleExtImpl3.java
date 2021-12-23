@@ -19,6 +19,7 @@ package com.alibaba.dubbo.common.extensionloader.ext1.impl;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extensionloader.ext1.SimpleExt;
 
+
 public class SimpleExtImpl3 implements SimpleExt {
     public String echo(URL url, String s) {
         return "Ext1Impl3-echo";
@@ -30,6 +31,11 @@ public class SimpleExtImpl3 implements SimpleExt {
 
     public String bang(URL url, int i) {
         return "bang3";
+    }
+
+    @Override
+    public String doSomething(URL url, int i) {
+        return null;
     }
 
 }

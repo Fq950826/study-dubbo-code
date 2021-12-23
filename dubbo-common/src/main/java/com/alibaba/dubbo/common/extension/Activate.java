@@ -59,6 +59,11 @@ public @interface Activate {
      * there's either <code>cache</code> or <code>validation</code> key appeared in the URL's parameters.
      * </p>
      *
+     * 当指定的键出现在URL的参数中时激活当前扩展。
+     *
+     * 例如，给定@Activate("cache, validation")，当前扩展将只在以下情况下返回
+     * *在URL的参数中出现了cache或validation的key，且对应的值不为空。
+     *
      * @return URL parameter keys
      * @see ExtensionLoader#getActivateExtension(URL, String)
      * @see ExtensionLoader#getActivateExtension(URL, String, String)

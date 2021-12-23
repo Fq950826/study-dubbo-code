@@ -47,6 +47,44 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 public class ExtensionLoader_Adaptive_Test {
 
     @Test
+    public void test_getAdaptiveExtension_customizeAdaptiveKey() throws Exception {
+        SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getAdaptiveExtension();
+
+        URL url = new URL(null,null,0);
+
+        //--------------- yell方法设置了@Adaptive注解的value值（"key1","key2"） ---------------
+        //设置url参数 key2为impl2扩展类
+        url = url.addParameter("key2", "impl2");
+        String yell = ext.yell(url, "haha");
+        assertEquals("Ext1Impl2-yell", yell);
+
+        //设置url参数 key1为impl3扩展类
+        url = url.addParameter("key1", "impl3");
+        yell = ext.yell(url, "haha");
+        assertEquals("Ext1Impl3-yell", yell);
+
+
+        //--------------- echo方法没有设置了@Adaptive注解的value值 ---------------
+
+        //设置url参数  简单类名 为impl3扩展类
+        url = url.addParameter("simple.ext", "impl3");
+        String echo = ext.echo(url, "haha");
+        assertEquals("Ext1Impl3-echo", echo);
+
+        //未设置url任何参数,那SPI注解中默认的扩展类
+        echo = ext.echo(new URL(null,null,0), "haha");
+        assertEquals("Ext1Impl1-echo", echo);
+    }
+
+
+
+
+
+
+
+
+
+    @Test
     public void test_useAdaptiveClass() throws Exception {
         ExtensionLoader<HasAdaptiveExt> loader = ExtensionLoader.getExtensionLoader(HasAdaptiveExt.class);
         HasAdaptiveExt ext = loader.getAdaptiveExtension();
@@ -77,21 +115,6 @@ public class ExtensionLoader_Adaptive_Test {
         }
     }
 
-    @Test
-    public void test_getAdaptiveExtension_customizeAdaptiveKey() throws Exception {
-        SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getAdaptiveExtension();
-
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("key2", "impl2");
-        URL url = new URL("p1", "1.2.3.4", 1010, "path1", map);
-
-        String echo = ext.yell(url, "haha");
-        assertEquals("Ext1Impl2-yell", echo);
-
-        url = url.addParameter("key1", "impl3"); // note: URL is value's type
-        echo = ext.yell(url, "haha");
-        assertEquals("Ext1Impl3-yell", echo);
-    }
 
     @Test
     public void test_getAdaptiveExtension_protocolKey() throws Exception {

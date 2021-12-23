@@ -68,6 +68,44 @@ import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class ExtensionLoaderTest {
+
+    @Test
+    public void testLoadActivateExtension() throws Exception {
+        // test default
+        URL url = URL.valueOf("test://localhost/test");
+        List<ActivateExt1> list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, new String[]{}, "default_group");
+        Assert.assertEquals(1, list.size());
+        Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
+
+        // test group
+        url = url.addParameter(Constants.GROUP_KEY, "group1");
+        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, new String[]{}, "group1");
+        Assert.assertEquals(1, list.size());
+        Assert.assertTrue(list.get(0).getClass() == GroupActivateExtImpl.class);
+
+        // test value
+        url = url.removeParameter(Constants.GROUP_KEY);
+        url = url.addParameter(Constants.GROUP_KEY, "value");
+        url = url.addParameter("value", "value");
+        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, new String[]{}, "value");
+        Assert.assertEquals(1, list.size());
+        Assert.assertTrue(list.get(0).getClass() == ValueActivateExtImpl.class);
+
+        // test order
+        url = URL.valueOf("test://localhost/test");
+        url = url.addParameter(Constants.GROUP_KEY, "order");
+        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, new String[]{}, "order");
+        Assert.assertEquals(2, list.size());
+        Assert.assertTrue(list.get(0).getClass() == OrderActivateExtImpl1.class);
+        Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl2.class);
+    }
+
+
+
     @Test
     public void test_getExtensionLoader_Null() throws Exception {
         try {
@@ -121,29 +159,9 @@ public class ExtensionLoaderTest {
         assertNull(name);
     }
 
-    @Test
-    public void test_getExtension() throws Exception {
-        assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl1") instanceof SimpleExtImpl1);
-        assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl2") instanceof SimpleExtImpl2);
-    }
-
-    @Test
-    public void test_getExtension_WithWrapper() throws Exception {
-        WrappedExt impl1 = ExtensionLoader.getExtensionLoader(WrappedExt.class).getExtension("impl1");
-        assertThat(impl1, anyOf(instanceOf(Ext5Wrapper1.class), instanceOf(Ext5Wrapper2.class)));
-
-        WrappedExt impl2 = ExtensionLoader.getExtensionLoader(WrappedExt.class).getExtension("impl2");
-        assertThat(impl2, anyOf(instanceOf(Ext5Wrapper1.class), instanceOf(Ext5Wrapper2.class)));
 
 
-        URL url = new URL("p1", "1.2.3.4", 1010, "path1");
-        int echoCount1 = Ext5Wrapper1.echoCount.get();
-        int echoCount2 = Ext5Wrapper2.echoCount.get();
 
-        assertEquals("Ext5Impl1-echo", impl1.echo(url, "ha"));
-        assertEquals(echoCount1 + 1, Ext5Wrapper1.echoCount.get());
-        assertEquals(echoCount2 + 1, Ext5Wrapper2.echoCount.get());
-    }
 
     @Test
     public void test_getExtension_ExceptionNoExtension() throws Exception {
@@ -365,59 +383,29 @@ public class ExtensionLoaderTest {
         }
     }
 
+
+
+
+
+
+
+    /**
+     * 获取扩展类
+     * @throws Exception
+     */
     @Test
-    public void testLoadActivateExtension() throws Exception {
-        // test default
-        URL url = URL.valueOf("test://localhost/test");
-        List<ActivateExt1> list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, new String[]{}, "default_group");
-        Assert.assertEquals(1, list.size());
-        Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
+    public void test_getExtension() throws Exception {
+        ExtensionLoader<SimpleExt> extensionLoader = ExtensionLoader.getExtensionLoader(SimpleExt.class);
+        extensionLoader.getExtension("impl1");
 
-        // test group
-        url = url.addParameter(Constants.GROUP_KEY, "group1");
-        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, new String[]{}, "group1");
-        Assert.assertEquals(1, list.size());
-        Assert.assertTrue(list.get(0).getClass() == GroupActivateExtImpl.class);
-
-        // test value
-        url = url.removeParameter(Constants.GROUP_KEY);
-        url = url.addParameter(Constants.GROUP_KEY, "value");
-        url = url.addParameter("value", "value");
-        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, new String[]{}, "value");
-        Assert.assertEquals(1, list.size());
-        Assert.assertTrue(list.get(0).getClass() == ValueActivateExtImpl.class);
-
-        // test order
-        url = URL.valueOf("test://localhost/test");
-        url = url.addParameter(Constants.GROUP_KEY, "order");
-        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, new String[]{}, "order");
-        Assert.assertEquals(2, list.size());
-        Assert.assertTrue(list.get(0).getClass() == OrderActivateExtImpl1.class);
-        Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl2.class);
+        assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl1") instanceof SimpleExtImpl1);
+        assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl2") instanceof SimpleExtImpl2);
     }
 
-    @Test
-    public void testLoadDefaultActivateExtension() throws Exception {
-        // test default
-        URL url = URL.valueOf("test://localhost/test?ext=order1,default");
-        List<ActivateExt1> list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, "ext", "default_group");
-        Assert.assertEquals(2, list.size());
-        Assert.assertTrue(list.get(0).getClass() == OrderActivateExtImpl1.class);
-        Assert.assertTrue(list.get(1).getClass() == ActivateExt1Impl1.class);
 
-        url = URL.valueOf("test://localhost/test?ext=default,order1");
-        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, "ext", "default_group");
-        Assert.assertEquals(2, list.size());
-        Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
-        Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl1.class);
-    }
-
+    /**
+     * 依赖注入
+     */
     @Test
     public void testInjectExtension() {
         // test default
@@ -427,5 +415,41 @@ public class ExtensionLoaderTest {
         org.junit.Assert.assertNull(injectExtImpl.getSimpleExt1());
         org.junit.Assert.assertNull(injectExtImpl.getGenericType());
     }
+
+
+
+    /**
+     * 获取扩展类，含有包装AOP
+     * @throws Exception
+     */
+    @Test
+    public void test_getExtension_WithWrapper() throws Exception {
+        WrappedExt impl1 = ExtensionLoader.getExtensionLoader(WrappedExt.class).getExtension("impl1");
+
+        //调用方法
+        impl1.echo(new URL(null,null,0), "ha");
+    }
+
+
+
+    @Test
+    public void testLoadDefaultActivateExtension() throws Exception {
+        URL url = URL.valueOf("test://localhost/test");
+        url=url.addParameter("validation","2234");
+
+        List<ActivateExt1> list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, new String[]{"order1"}, "group3");
+        Assert.assertEquals(3, list.size());
+        Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
+        Assert.assertTrue(list.get(1).getClass() == ValueActivateExtImpl.class);
+        Assert.assertTrue(list.get(2).getClass() == OrderActivateExtImpl1.class);
+    }
+
+
+
+
+
+
+
 
 }

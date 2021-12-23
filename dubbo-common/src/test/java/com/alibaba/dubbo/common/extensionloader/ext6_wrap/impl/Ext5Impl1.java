@@ -21,6 +21,7 @@ import com.alibaba.dubbo.common.extensionloader.ext6_wrap.WrappedExt;
 
 public class Ext5Impl1 implements WrappedExt {
     public String echo(URL url, String s) {
+        System.out.println("执行 Ext5Impl-1");
         return "Ext5Impl1-echo";
     }
 }

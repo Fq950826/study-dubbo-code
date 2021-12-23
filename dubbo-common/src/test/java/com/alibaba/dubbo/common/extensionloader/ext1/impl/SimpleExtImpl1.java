@@ -31,4 +31,11 @@ public class SimpleExtImpl1 implements SimpleExt {
     public String bang(URL url, int i) {
         return "bang1";
     }
+
+    @Override
+    public String doSomething(URL url, int i) {
+        return null;
+    }
+
+
 }

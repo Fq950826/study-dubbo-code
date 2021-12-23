@@ -31,6 +31,7 @@ public class Ext5Wrapper1 implements WrappedExt {
 
     public String echo(URL url, String s) {
         echoCount.incrementAndGet();
+        System.out.println("执行wrapper1");
         return instance.echo(url, s);
     }
 }
